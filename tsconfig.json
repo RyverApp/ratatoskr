@@ -1,0 +1,26 @@
+{
+    "version": "1.5.0-beta",
+    "compileOnSave": true,
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "declaration": false,
+        "noImplicitAny": false,
+        "removeComments": true,
+        "noLib": false,
+        "outDir": "./lib",
+        "preserveConstEnums": true,
+        "suppressImplicitAnyIndexErrors": true
+    },
+    "filesGlob": [
+        "./src/**/*.ts",
+        "./typings/**/*.ts"
+    ],
+    "files": [
+        "./src/main.ts",
+        "./src/socket.ts",
+        "./typings/node/node.d.ts",
+        "./typings/tsd.d.ts",
+        "./typings/vendor/object-tree.d.ts"
+    ]
+}

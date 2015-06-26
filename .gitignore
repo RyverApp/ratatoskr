@@ -1,0 +1,15 @@
+#OS junk files
+Thumbs.db
+*.DS_Store
+
+.idea/
+*.iml
+*.patch
+*.swp
+
+.sass-cache
+npm-debug.log
+node_modules
+bower_components
+
+dist/
