@@ -8,10 +8,11 @@ module.exports = {
         ]
     },
     entry: {
-        freya: ['./src/main.ts']
+        ratatoskr: ['src/main.ts'],
+        example: ['example/index.js']
     },
     output: {
-        path: './dist',
-        filename: './[name].js'
+        path: 'dist',
+        filename: '[name].js'
     }
 };
