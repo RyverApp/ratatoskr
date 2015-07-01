@@ -16,6 +16,7 @@
     "karma-chrome-launcher": "^0.2.0",
     "karma-jasmine": "^0.3.5",
     "karma-typescript-preprocessor": "0.0.19",
+    "nodejs-websocket": "^1.2.1",
     "typescript": "^1.5.0-beta"
   }
 }

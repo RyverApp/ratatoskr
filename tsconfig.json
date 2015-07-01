@@ -9,25 +9,26 @@
         "removeComments": true,
         "noLib": false,
         "outDir": "./lib",
+        "rootDir": "./src",
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true
     },
     "filesGlob": [
         "./src/**/*.ts",
         "./typings/**/*.ts",
-        "./test/**/*.ts",
         "./node_modules/freya-next/freya-next.d.ts"
     ],
     "files": [
         "./src/connection.ts",
+        "./src/defer.ts",
         "./src/lang.ts",
         "./src/main.ts",
-        "./src/transport.ts",
         "./typings/es6-promise/es6-promise.d.ts",
         "./typings/jasmine/jasmine.d.ts",
         "./typings/node/node.d.ts",
         "./typings/tsd.d.ts",
         "./typings/vendor/object-tree.d.ts",
-        "./test/transport.ts"
+        "./typings/ws/ws.d.ts",
+        "./node_modules/freya-next/freya-next.d.ts"
     ]
 }

@@ -11,7 +11,7 @@ module.exports = function(grunt) {
                 out: 'ratatoskr.d.ts',
             },
             default: {
-                src: [ './src/main.ts' ]
+                src: [ 'src/main.ts' ]
             }
         },
         'webpack': {

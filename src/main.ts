@@ -1,3 +1,6 @@
-var ObjectTree = <XML.ObjectTree>require('../vendor/object-tree');
+/// <reference path="../typings/tsd.d.ts" />
 
-var a = new ObjectTree();
+import * as _connection from './connection';
+export var connection = _connection;
+
+ 

@@ -4,13 +4,17 @@ module.exports = {
     },
     module: {
         loaders: [
-            {test: /\.ts$/, loader: 'awesome-typescript-loader'}
+            {test: /\.ts$/, loader: 'awesome-typescript-loader', query: {emitRequireType:false}}
         ]
     },
+    externals: [
+        {'ws': 'var WebSocket'}
+    ],
     entry: {
-        ratatoskr: ['src/main.ts'],
-        example: ['example/index.js']
+        ratatoskr: ['./lib/main.js'],
+        example: ['./example/index.js']
     },
+    debug: false,
     output: {
         path: 'dist',
         filename: '[name].js'
