@@ -4,3 +4,4 @@
 /// <reference path="../node_modules/freya-next/freya-next.d.ts" />
 /// <reference path="es6-promise/es6-promise.d.ts" />
 /// <reference path="ws/ws.d.ts" />
+/// <reference path="./shortid/shortid.d.ts"/>

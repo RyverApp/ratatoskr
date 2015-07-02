@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title>Ratatoskr Example</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript" src="../dist/ratatoskr.js"></script>
+</head>
+<body>
+    <button id="connect">Connect</button>
+    <hr />
+    <input type="text" id="message"></input>
+    <button id="send">Send</button>
+</body>
+<script>
+$(function() {
+    var client = new Ratatoskr.Client({
+        endpoint: 'ws://localhost:8001',
+        extensions: [
+            Ratatoskr.resume({ping: 5*1000})
+        ]
+    });
+
+    client.on('connected', function() {
+        console.log('connected');
+    });
+
+    client.on('authenticated', function() {
+        console.log('authenticated');
+    });
+
+    client.on('disconnected', function(reason) {
+        console.log('disconnected', reason);
+    });
+
+    client.on('transport:close', function(reason) {
+        console.log('transport:close', reason);
+    });
+
+    client.on('transport:error', function(reason) {
+        console.log('transport:error', reason);
+    })
+
+    $('#connect').on('click', function(evt) {
+        client.connect();
+    });
+});
+</script>
+</html>

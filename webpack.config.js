@@ -16,6 +16,7 @@ module.exports = {
     },
     debug: false,
     output: {
+        library: 'Ratatoskr',
         path: 'dist',
         filename: '[name].js'
     }
