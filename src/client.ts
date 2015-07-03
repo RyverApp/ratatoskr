@@ -102,10 +102,6 @@ export class Client extends EventEmitter {
     }
 
     disconnect(reason: any = this): void {
-        if (this.status === ConnectionStatus.Disconnected) {
-            return;
-        }
-
         this._wsDisconnect(this._socket, reason);
     }
 

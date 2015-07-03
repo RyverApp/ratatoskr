@@ -6,7 +6,7 @@
     <script type="text/javascript" src="../dist/ratatoskr.js"></script>
 </head>
 <body>
-    <button id="connect">Connect</button>
+    <button id="connect">Connect</button><button id="disconnect">Disconnect</button>
     <hr />
     <input type="text" id="message"></input>
     <button id="send">Send</button>
@@ -14,9 +14,9 @@
 <script>
 $(function() {
     var client = new Ratatoskr.Client({
-        endpoint: 'ws://localhost:8001',
+        endpoint: 'ws://192.168.1.105:8001',
         extensions: [
-            Ratatoskr.resume({ping: 5*1000})
+            Ratatoskr.resume({ping: 5*1000, retry: 2})
         ]
     });
 
@@ -60,8 +60,20 @@ $(function() {
         console.log('resume', delay, attempts);
     });
 
+    client.on('resume:quit', function() {
+        console.log('resume:quit');
+    });
+
+    client.on('resume:stop', function() {
+        console.log('resume:stop');
+    });
+
     $('#connect').on('click', function(evt) {
         client.connect();
+    });
+
+    $('#disconnect').on('click', function(evt) {
+        client.disconnect();
     });
 });
 </script>

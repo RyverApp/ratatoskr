@@ -9,17 +9,20 @@ export interface ResumeOptions {
 
 export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions) {
     return (client: Client) => {
-        var pingInterval: any;
+        var pingTimeout: any;
         var resumeTimeout: any;
         var resumeAttempts: number = 0;
+
+        var pong = 0;
 
         function doPing() {
             var msg = {};
             client.emit('resume:ping', msg);
             client.sendPing({}).then((ack) => {
                 client.emit('resume:pong', ack);
-            }, () => {
-                client.disconnect(new Error('pong'));
+                pingTimeout = setTimeout(() => doPing(), ping);
+            }, (err) => {
+                client.disconnect(new Error('pong: ' + pong++));
             });
         }
 
@@ -41,16 +44,20 @@ export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions) {
         }
 
         client.on('authenticated', () => {
-            pingInterval = setInterval(doPing, ping);
+            pingTimeout = setTimeout(() => doPing(), ping);
             resumeAttempts = 0;
         });
 
         client.on('disconnected', (reason) => {
-            clearInterval(pingInterval), pingInterval = null;
+            clearTimeout(pingTimeout), pingTimeout = null;
 
             if (reason === client) {
                 // disconnect was called directly, do not resume, cancel outstanding
                 clearTimeout(resumeTimeout), resumeTimeout = null;
+                if (resumeAttempts > 0) {
+                    client.emit('resume:stop');
+                }
+                resumeAttempts = 0;
                 return;
             }
 
