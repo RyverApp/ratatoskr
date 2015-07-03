@@ -13,8 +13,6 @@ export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions) {
         var resumeTimeout: any;
         var resumeAttempts: number = 0;
 
-        var pong = 0;
-
         function doPing() {
             var msg = {};
             client.emit('resume:ping', msg);
@@ -22,7 +20,7 @@ export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions) {
                 client.emit('resume:pong', ack);
                 pingTimeout = setTimeout(() => doPing(), ping);
             }, (err) => {
-                client.disconnect(new Error('pong: ' + pong++));
+                client.disconnect(new Error('pong'));
             });
         }
 
