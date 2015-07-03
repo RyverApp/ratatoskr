@@ -18,6 +18,8 @@ export enum ConnectionStatus {
 export interface ConnectionOptions {
     endpoint: string;
     authorization: string | AuthorizationFunc;
+    resource?: string;
+    agent?: string;
     timeout?: number;
     extensions?: any[];
 }
@@ -35,15 +37,17 @@ export interface AuthorizationFunc {
 }
 
 export interface Extension {
-    init(connection: Client);
+    init(client: Client);
 }
 
 export interface ExtensionAsFunc {
-    (connection: Client): void;
+    (client: Client): void;
 }
 
 export class Client extends EventEmitter {
     status: ConnectionStatus = ConnectionStatus.Disconnected;
+    resource: string;
+    agent: string;
     endpoint: string;
     authorization: string | AuthorizationFunc;
     timeout: number = 5 * 1000;
@@ -51,9 +55,11 @@ export class Client extends EventEmitter {
     protected _socket: WebSocket;
     protected _needsAck: {[id:string]:PendingAckContext} = {};
 
-    constructor({endpoint, authorization, timeout = 5 * 1000, extensions = []}: ConnectionOptions) {
+    constructor({endpoint, authorization, timeout = 5 * 1000, resource = '', agent = 'Ratatoskr', extensions = []}: ConnectionOptions) {
         super();
 
+        this.agent = agent;
+        this.resource = resource;
         this.endpoint = endpoint;
         this.authorization = authorization;
         this.timeout = timeout;
@@ -145,7 +151,16 @@ export class Client extends EventEmitter {
 
         auth = typeof this.authorization === 'function' ? (<AuthorizationFunc>this.authorization)() : <string>this.authorization;
 
-        this._wsSend(<AuthMessage>{id: this.nextId(), type: 'auth', authorization: auth}).then((ack) => {
+        var message = <AuthMessage>{
+            id: this.nextId(),
+            type: 'auth',
+            authorization: auth
+        };
+
+        if (this.agent) message.agent = this.agent;
+        if (this.resource) message.resource = this.resource;
+
+        this._wsSend(message).then((ack) => {
             this.status = ConnectionStatus.Authenticated;
             this.emit('authenticated');
         }, (err) => {

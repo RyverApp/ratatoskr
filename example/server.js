@@ -20,8 +20,13 @@ function makeAck(id) {
 
 server.on('connection', function accept(conn) {
     (function(id) {
+        var resource, agent;
+
         function tag() {
-            return '[' + id + ']';
+            var text = '[' + id + ']';
+            if (agent) text += ' ' + agent;
+            if (resource) text += ' ' + resource;
+            return text;
         }
 
         console.log(tag(), 'new connection');
@@ -43,6 +48,8 @@ server.on('connection', function accept(conn) {
                 switch (msg.type) {
                     case 'auth':
                         console.log(tag(), 'authorized', authenticated = true);
+                        agent = msg.agent;
+                        resource = msg.resource;
                         break;
                     default:
                         conn.send(makeError('not authorized'));
@@ -67,7 +74,7 @@ server.on('connection', function accept(conn) {
             }
         });
         conn.on('close', function(code, reason) {
-            console.log(tag, 'closed', code, reason);
+            console.log(tag(), 'closed', code, reason);
         });
     })(++id);
 });

@@ -6,7 +6,10 @@
     <script type="text/javascript" src="../dist/ratatoskr.js"></script>
 </head>
 <body>
-    <button id="connect">Connect</button><button id="disconnect">Disconnect</button>
+    <label>Agent:<input type="text" id="agent"></input></label><br />
+    <label>Resource:<input type="text" id="resource"></input></label>
+    <hr />
+    <button id="connect">Connect</button>&nbsp;<button id="disconnect">Disconnect</button>
     <hr />
     <input type="text" id="message"></input>
     <button id="send">Send</button>
@@ -69,6 +72,12 @@ $(function() {
     });
 
     $('#connect').on('click', function(evt) {
+        var agent = $('#agent').val(),
+            resource = $('#resource').val();
+
+        if (agent) client.agent = agent;
+        if (resource) client.resource = resource;
+
         client.connect();
     });
 

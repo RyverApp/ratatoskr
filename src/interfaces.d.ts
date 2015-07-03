@@ -13,6 +13,8 @@ export interface Ack {
 
 export interface AuthMessage extends Message {
     authorization?: string;
+    resource?: string;
+    agent?: string;
 }
 
 export interface ChatMessage extends Message {
@@ -33,5 +35,5 @@ export interface UserTypingMessage extends Message {
 }
 
 export interface PingMessage extends Message {
-    
+
 }
