@@ -13,7 +13,7 @@
     <hr />
     <button id="connect">Connect</button>&nbsp;<button id="disconnect">Disconnect</button>
     <hr />
-    <input type="text" id="message"></input>
+    <textarea id="message"></textarea>
     <button id="send">Send</button>
 </body>
 <script>
@@ -46,6 +46,10 @@ $(function() {
 
     client.on('chat', function(msg) {
         console.log('chat', msg);
+    });
+
+    client.on('error', function(msg) {
+        console.log('error', msg);
     });
 
     client.on('presence_change', function(msg) {
@@ -93,6 +97,10 @@ $(function() {
 
     $('#disconnect').on('click', function(evt) {
         client.disconnect();
+    });
+
+    $('#send').on('click', function(evt) {
+        client.send(JSON.parse($('#message').val()));
     });
 });
 </script>

@@ -11,6 +11,11 @@ export interface Ack {
     reply_type: string;
 }
 
+export interface ErrorMessage extends Message {
+    code: string;
+    text: string;
+}
+
 export interface AuthMessage extends Message {
     authorization?: string;
     resource?: string;
@@ -18,19 +23,20 @@ export interface AuthMessage extends Message {
 }
 
 export interface ChatMessage extends Message {
-    to?: string;
+    to: string;
     from?: string;
-    text?: string;
+    text: string;
+    extras?: any;
 }
 
 export interface PresenceChangeMessage extends Message {
-    to?: string;
+    to: string;
     from?: string;
-    presence?: string;
+    presence: string;
 }
 
 export interface UserTypingMessage extends Message {
-    to?: string;
+    to: string;
     from?: string;
 }
 

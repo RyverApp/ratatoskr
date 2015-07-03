@@ -44,6 +44,8 @@ export interface ExtensionAsFunc {
     (client: Client): void;
 }
 
+/**
+ */
 export class Client extends EventEmitter {
     status: ConnectionStatus = ConnectionStatus.Disconnected;
     resource: string;
@@ -127,7 +129,7 @@ export class Client extends EventEmitter {
         }
 
         Object.keys(this._needsAck).forEach((k) => {
-            this._needsAck[k].deferred.reject(new Error('disconnect'));
+            this._needsAck[k].deferred.reject(reason);
         }), this._needsAck = {};
 
         this.status = ConnectionStatus.Disconnected;
@@ -173,7 +175,13 @@ export class Client extends EventEmitter {
         try {
             this.emit('raw:incomming', evt.data);
             var message = JSON.parse(evt.data);
-            if (message.type === 'ack') {
+            if (message.type === 'error') {
+                if (message.code === 'auth_failed') {
+                    this._wsDisconnect(this._socket, message);
+                } else {
+                    this.emit('protocol:error', message);
+                }
+            } else if (message.type === 'ack') {
                 var id = message.reply_to;
                 if (this._needsAck[id]) {
                     this._needsAck[id].deferred.resolve(message);
