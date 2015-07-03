@@ -38,7 +38,27 @@ $(function() {
 
     client.on('transport:error', function(reason) {
         console.log('transport:error', reason);
-    })
+    });
+
+    client.on('chat', function(msg) {
+        console.log('chat', msg);
+    });
+
+    client.on('presence_change', function(msg) {
+        console.log('presence', msg);
+    });
+
+    client.on('resume:ping', function(msg) {
+        console.log('resume:ping', msg);
+    });
+
+    client.on('resume:pong', function(msg) {
+        console.log('resume:pong', msg);
+    });
+
+    client.on('resume', function(delay, attempts) {
+        console.log('resume', delay, attempts);
+    });
 
     $('#connect').on('click', function(evt) {
         client.connect();

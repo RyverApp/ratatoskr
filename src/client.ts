@@ -6,6 +6,7 @@ import * as lang from './lang';
 import defer, {Deferred} from './defer';
 import * as WebSocket from 'ws';
 import * as shortid from 'shortid';
+import {Message, AuthMessage, ChatMessage, PresenceChangeMessage, UserTypingMessage, Ack, PingMessage} from './interfaces.d';
 
 export enum ConnectionStatus {
     Disconnected = 0,
@@ -21,13 +22,9 @@ export interface ConnectionOptions {
     extensions?: any[];
 }
 
-export interface Ack {
-    type: string;
-    reply_to: string | number;
-}
 
 export interface PendingAckContext {
-    id: string | number;
+    id: string;
     message: any;
     deferred: Deferred;
     timeout: any;
@@ -104,12 +101,12 @@ export class Client extends EventEmitter {
         }
     }
 
-    disconnect(): void {
+    disconnect(reason: any = this): void {
         if (this.status === ConnectionStatus.Disconnected) {
             return;
         }
 
-        this._wsDisconnect(this._socket);
+        this._wsDisconnect(this._socket, reason);
     }
 
     protected _wsDisconnect(socket: WebSocket, reason?: any): void {
@@ -126,6 +123,10 @@ export class Client extends EventEmitter {
         } finally {
             this._socket = null;
         }
+
+        Object.keys(this._needsAck).forEach((k) => {
+            this._needsAck[k].deferred.reject(new Error('disconnect'));
+        }), this._needsAck = {};
 
         this.status = ConnectionStatus.Disconnected;
 
@@ -148,7 +149,7 @@ export class Client extends EventEmitter {
 
         auth = typeof this.authorization === 'function' ? (<AuthorizationFunc>this.authorization)() : <string>this.authorization;
 
-        this._wsSend({id: this.nextId(), type: 'auth', authorization: auth}).then((ack) => {
+        this._wsSend(<AuthMessage>{id: this.nextId(), type: 'auth', authorization: auth}).then((ack) => {
             this.status = ConnectionStatus.Authenticated;
             this.emit('authenticated');
         }, (err) => {
@@ -167,16 +168,16 @@ export class Client extends EventEmitter {
                     this._needsAck[id].deferred.resolve(message);
                 }
             } else if (message.type) {
-                this.emit(`protocol:${message.type}`, message);
+                this.emit(`${message.type}`, message);
             }
         } catch (err) {
             this.emit('protocol:error', err);
         }
     }
 
-    protected _wsError(err) {
-        this.emit('transport:error', err);
-        this._wsDisconnect(this._socket, err);
+    protected _wsError(evt) {
+        this.emit('transport:error', evt);
+        this._wsDisconnect(this._socket, evt);
     }
 
     protected _wsClose(evt) {
@@ -184,7 +185,7 @@ export class Client extends EventEmitter {
         this._wsDisconnect(this._socket, evt);
     }
 
-    protected _wsSend(message, timeout: number = this.timeout): Promise<Ack> {
+    protected _wsSend(message: Message, timeout: number = this.timeout): Promise<Ack> {
         if (this.status < ConnectionStatus.Connected) {
             return Promise.reject(new Error('Cannot send data across a socket that is not connected.'));
         }
@@ -230,10 +231,35 @@ export class Client extends EventEmitter {
         }
     }
 
-    send(message): Promise<Ack> {
+    send(message: Message): Promise<Ack> {
         if (this.status < ConnectionStatus.Authenticated) {
             return Promise.reject(new Error('Cannot send data across a socket that is not authenticated.'));
         }
         return this._wsSend(message);
+    }
+
+    _ensureCanAck(ack: boolean, message: Message): Message {
+        if (ack && !('id' in message)) { message.id = this.nextId(); }
+        return message;
+    }
+
+    sendPing(message: PingMessage = {}, ack: boolean = true): Promise<Ack> {
+        message.type = 'ping';
+        return this.send(this._ensureCanAck(ack, message));
+    }
+
+    sendChat(message: ChatMessage, ack: boolean = true): Promise<Ack> {
+        message.type = 'chat';
+        return this.send(this._ensureCanAck(ack, message));
+    }
+
+    sendPresenceChange(message: PresenceChangeMessage, ack: boolean = false): Promise<Ack> {
+        message.type = 'presence_change';
+        return this.send(this._ensureCanAck(ack, message));
+    }
+
+    sendUserTyping(message: UserTypingMessage, ack: boolean = false): Promise<Ack> {
+        message.type = 'user_typing';
+        return this.send(this._ensureCanAck(ack, message));
     }
 }
