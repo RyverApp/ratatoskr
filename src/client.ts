@@ -2,11 +2,10 @@
 
 import {EventEmitter} from 'events';
 import * as url from 'url';
-import * as lang from './lang';
 import defer, {Deferred} from './defer';
 import * as WebSocket from 'ws';
 import * as shortid from 'shortid';
-import {Message, AuthMessage, ChatMessage, PresenceChangeMessage, UserTypingMessage, Ack, PingMessage} from './interfaces.d';
+import {Message, AuthMessage, ChatMessage, PresenceChangeMessage, UserTypingMessage, Ack, PingMessage, TeamJoinMessage, TeamLeaveMessage} from './interfaces.d';
 
 export enum ConnectionStatus {
     Disconnected = 0,
@@ -279,6 +278,16 @@ export class Client extends EventEmitter {
 
     sendUserTyping(message: UserTypingMessage, ack: boolean = false): Promise<Ack> {
         message.type = 'user_typing';
+        return this.send(this._ensureCanAck(ack, message));
+    }
+
+    sendTeamJoin(message: TeamJoinMessage, ack: boolean = false): Promise<Ack> {
+        message.type = 'team_join';
+        return this.send(this._ensureCanAck(ack, message));
+    }
+
+    sendTeamLeave(message: TeamLeaveMessage, ack: boolean = false): Promise<Ack> {
+        message.type = 'team_leave';
         return this.send(this._ensureCanAck(ack, message));
     }
 }

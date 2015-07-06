@@ -5,4 +5,7 @@ export var Client = _Client;
 export var ConnectionStatus = _ConnectionStatus;
 
 import {resume as _resume} from './extensions/resume';
-export var resume = _resume; 
+export var resume = _resume;
+
+import {presenceBatch as _presenceBatch} from './extensions/presence-batch';
+export var presenceBatch = _presenceBatch;

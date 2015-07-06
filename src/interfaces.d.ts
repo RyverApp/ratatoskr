@@ -43,3 +43,11 @@ export interface UserTypingMessage extends Message {
 export interface PingMessage extends Message {
 
 }
+
+export interface TeamJoinMessage extends Message {
+    to: string;
+}
+
+export interface TeamLeaveMessage extends Message {
+    to: string;
+}

@@ -21,6 +21,7 @@
     "files": [
         "./src/client.ts",
         "./src/defer.ts",
+        "./src/extensions/presence-batch.ts",
         "./src/extensions/resume.ts",
         "./src/interfaces.d.ts",
         "./src/lang.ts",
@@ -32,7 +33,6 @@
         "./typings/shortid/shortid.d.ts",
         "./typings/tsd.d.ts",
         "./typings/vendor/object-tree.d.ts",
-        "./typings/ws/ws.d.ts",
-        "./node_modules/freya-next/freya-next.d.ts"
+        "./typings/ws/ws.d.ts"
     ]
 }

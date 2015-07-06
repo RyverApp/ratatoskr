@@ -17,13 +17,15 @@ module.exports = function(grunt) {
             }
         },
         'webpack': {
-            'compile': require('./webpack.config')
+            'build': require('./webpack.config')
         },
         'uglify': {
-            'compile': {
+            'build': {
                 'src': 'dist/ratatoskr.js',
                 'dest': 'dist/ratatoskr.min.js'
             }
         }
     });
+
+    grunt.registerTask('build', ['webpack:build', 'uglify:build']);
 };
