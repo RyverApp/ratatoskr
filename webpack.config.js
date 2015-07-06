@@ -11,8 +11,7 @@ module.exports = {
         {'ws': 'var WebSocket'}
     ],
     entry: {
-        ratatoskr: ['./lib/main.js'],
-        example: ['./example/index.js']
+        ratatoskr: ['./lib/main.js']
     },
     debug: false,
     output: {
