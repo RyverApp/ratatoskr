@@ -15,8 +15,7 @@
     },
     "filesGlob": [
         "./src/**/*.ts",
-        "./typings/**/*.ts",
-        "./node_modules/freya-next/freya-next.d.ts"
+        "./typings/**/*.ts"
     ],
     "files": [
         "./src/client.ts",
@@ -24,7 +23,6 @@
         "./src/extensions/presence-batch.ts",
         "./src/extensions/resume.ts",
         "./src/interfaces.d.ts",
-        "./src/lang.ts",
         "./src/main.ts",
         "./typings/es6-promise/es6-promise.d.ts",
         "./typings/jasmine/jasmine.d.ts",
