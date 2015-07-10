@@ -163,7 +163,7 @@ export class Client extends EventEmitter {
 
         this._wsSend(message).then((ack) => {
             this.status = ConnectionStatus.Authenticated;
-            this.emit('authenticated');
+            this.emit('authenticated', ack);
         }, (err) => {
             this.emit('protocol:error', err);
             this._wsDisconnect(this._socket, err);
