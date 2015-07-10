@@ -7,7 +7,7 @@ export interface PresenceBatchOptions {
     timeout?: number;
 }
 
-export function presenceBatch({timeout = 150}: PresenceBatchOptions) {
+export function presenceBatch({timeout = 150}: PresenceBatchOptions = {}) {
     return (client: Client) => {
         var batch: PresenceChangeMessage[] = [],
             batchTimeout: any;

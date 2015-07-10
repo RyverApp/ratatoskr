@@ -7,7 +7,7 @@ export interface ResumeOptions {
     retry?: number;
 }
 
-export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions) {
+export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions = {}) {
     return (client: Client) => {
         var pingTimeout: any;
         var resumeTimeout: any;

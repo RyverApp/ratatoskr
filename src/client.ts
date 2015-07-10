@@ -15,8 +15,8 @@ export enum ConnectionStatus {
 }
 
 export interface ConnectionOptions {
-    endpoint: string;
-    authorization: string | AuthorizationFunc;
+    endpoint?: string;
+    authorization?: string | AuthorizationFunc;
     resource?: string;
     agent?: string;
     timeout?: number;
@@ -56,7 +56,7 @@ export class Client extends EventEmitter {
     protected _socket: WebSocket;
     protected _needsAck: {[id:string]:PendingAckContext} = {};
 
-    constructor({endpoint, authorization, timeout = 5 * 1000, resource = '', agent = 'Ratatoskr', extensions = []}: ConnectionOptions) {
+    constructor({endpoint, authorization, timeout = 5 * 1000, resource = '', agent = 'Ratatoskr', extensions = []}: ConnectionOptions = {}) {
         super();
 
         this.agent = agent;
