@@ -9,6 +9,7 @@ export interface ResumeOptions {
 
 export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions = {}) {
     return (client: Client) => {
+        var prevAckAt: number, thisAckAt: number;
         var pingTimeout: any;
         var resumeTimeout: any;
         var resumeAttempts: number = 0;
@@ -17,7 +18,9 @@ export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions = {}) {
             var msg = {};
             client.emit('resume:ping', msg);
             client.sendPing({}).then((ack) => {
+                prevAckAt = thisAckAt, thisAckAt = Date.now();
                 client.emit('resume:pong', ack);
+                client.emit('resume:tick', thisAckAt - prevAckAt, thisAckAt, prevAckAt);
                 pingTimeout = setTimeout(() => doPing(), ping);
             }, (err) => {
                 client.disconnect(new Error('pong'));
@@ -42,6 +45,7 @@ export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions = {}) {
         }
 
         client.on('authenticated', () => {
+            client.emit('resume:tick', thisAckAt = Date.now(), thisAckAt, thisAckAt);
             pingTimeout = setTimeout(() => doPing(), ping);
             resumeAttempts = 0;
         });
