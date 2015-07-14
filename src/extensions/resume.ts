@@ -45,7 +45,8 @@ export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions = {}) {
         }
 
         client.on('authenticated', () => {
-            client.emit('resume:tick', thisAckAt = Date.now(), thisAckAt, thisAckAt);
+            prevAckAt = thisAckAt || Date.now(), thisAckAt = Date.now();
+            client.emit('resume:tick', thisAckAt - prevAckAt, thisAckAt, prevAckAt);
             pingTimeout = setTimeout(() => doPing(), ping);
             resumeAttempts = 0;
         });
