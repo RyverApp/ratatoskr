@@ -43,6 +43,28 @@ export interface ExtensionAsFunc {
     (client: Client): void;
 }
 
+export enum MessageSendErrorCause {
+    NoAuth = 1,
+    NoAck = 2,
+    Serialization = 3,
+    Transport = 4,
+    Promise = 5
+}
+
+export class MessageSendError extends Error {
+    data: Message;
+    cause: MessageSendErrorCause;
+    source: any;
+
+    constructor(message: string, cause: MessageSendErrorCause, source?: any, data?: Message) {
+        super(message);
+
+        this.cause = cause;
+        this.source = source;
+        this.data = data;
+    }
+}
+
 /**
  */
 export class Client extends EventEmitter {
@@ -205,7 +227,7 @@ export class Client extends EventEmitter {
 
     protected _wsSend(message: Message, timeout: number = this.timeout): Promise<Ack> {
         if (this.status < ConnectionStatus.Connected) {
-            return Promise.reject(new Error('Cannot send data across a socket that is not connected.'));
+            return Promise.reject(new MessageSendError('Cannot send data across a socket that is not connected.', MessageSendErrorCause.NoAuth));
         }
 
         var data;
@@ -213,15 +235,16 @@ export class Client extends EventEmitter {
             data = JSON.stringify(message);
         } catch (err) {
             this.emit('protocol:error', err);
-            return Promise.reject(err);
+            return Promise.reject(new MessageSendError('Could not serialize message.', MessageSendErrorCause.Serialization, err, message));
         }
 
+        this.emit('raw:outgoing', data);
+
         try {
-            this.emit('raw:outgoing', data);
             this._socket.send(data);
         } catch (err) {
             this.emit('transport:error', err);
-            return Promise.reject(err);
+            return Promise.reject(new MessageSendError('An error occurred in the transport.', MessageSendErrorCause.Transport, err, message));
         }
 
         if (message.id) {
@@ -231,7 +254,9 @@ export class Client extends EventEmitter {
                 id: id,
                 message: message,
                 deferred: deferred,
-                timeout: setTimeout(() => deferred.reject(new Error('no ack')), timeout)
+                timeout: setTimeout(() => {
+                    deferred.reject(new MessageSendError('Did not receive acknowledgement in the timeout period.', MessageSendErrorCause.NoAck, void 0, message))
+                }, timeout)
             };
             var cleanup = () => {
                 clearTimeout(pending.timeout);
@@ -242,7 +267,7 @@ export class Client extends EventEmitter {
                 return ack;
             }, (err) => {
                 cleanup();
-                throw err;
+                throw new MessageSendError('An error occurred during promise resolution', MessageSendErrorCause.Promise, err, message);
             });
         } else {
             return Promise.resolve();
