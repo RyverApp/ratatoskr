@@ -44,6 +44,7 @@ export interface ExtensionAsFunc {
 }
 
 export enum MessageSendErrorCause {
+    NoConnection = 0,
     NoAuth = 1,
     NoAck = 2,
     Serialization = 3,
@@ -276,7 +277,7 @@ export class Client extends EventEmitter {
 
     send(message: Message): Promise<Ack> {
         if (this.status < ConnectionStatus.Authenticated) {
-            return Promise.reject(new Error('Cannot send data across a socket that is not authenticated.'));
+            return Promise.reject(new MessageSendError('Cannot send data across a socket that is not authenticated.', MessageSendErrorCause.NoAuth, void 0, message));
         }
         return this._wsSend(message);
     }

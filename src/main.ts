@@ -1,8 +1,10 @@
 /// <reference path="../typings/tsd.d.ts" />
 
-import {Client as _Client, ConnectionStatus as _ConnectionStatus} from './client';
+import {Client as _Client, ConnectionStatus as _ConnectionStatus, MessageSendError as _MessageSendError, MessageSendErrorCause as _MessageSendErrorCause} from './client';
 export var Client = _Client;
 export var ConnectionStatus = _ConnectionStatus;
+export var MessageSendError = _MessageSendError;
+export var MessageSendErrorCause = _MessageSendErrorCause;
 
 import {resume as _resume} from './extensions/resume';
 export var resume = _resume;
