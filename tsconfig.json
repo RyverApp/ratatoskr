@@ -27,9 +27,9 @@
         "./typings/es6-promise/es6-promise.d.ts",
         "./typings/jasmine/jasmine.d.ts",
         "./typings/node/node.d.ts",
-        "./typings/saslmechanisms/saslmechanisms.d.ts",
         "./typings/shortid/shortid.d.ts",
         "./typings/tsd.d.ts",
+        "./typings/vendor/debug.d.ts",
         "./typings/vendor/object-tree.d.ts",
         "./typings/ws/ws.d.ts"
     ]

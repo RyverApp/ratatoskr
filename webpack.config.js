@@ -1,10 +1,14 @@
+var WebpackStrip = require('webpack-strip');
+
+console.log('grunt', process.env);
+
 module.exports = {
     resolve: {
         extensions: ['', '.ts', '.js']
     },
     module: {
         loaders: [
-            {test: /\.ts$/, loader: 'awesome-typescript-loader', query: {emitRequireType:false}}
+            { test: /\.js$/, loader: WebpackStrip.loader('debug', 'console.log') }
         ]
     },
     externals: [

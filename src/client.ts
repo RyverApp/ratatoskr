@@ -7,6 +7,8 @@ import * as WebSocket from 'ws';
 import * as shortid from 'shortid';
 import {Message, AuthMessage, ChatMessage, PresenceChangeMessage, UserTypingMessage, Ack, PingMessage, TeamJoinMessage, TeamLeaveMessage} from './interfaces.d';
 
+const debug: Debug.Logger = require('debug')('ratatoskr:client');
+
 export enum ConnectionStatus {
     Disconnected = 0,
     Connecting = 1,
@@ -114,18 +116,26 @@ export class Client extends EventEmitter {
 
         this.status = ConnectionStatus.Connecting;
 
+        debug('connect endpoint=', this.endpoint);
+
         this.emit('connecting');
 
         var socket = new WebSocket(this.endpoint, ['ratatoskr']);
 
         socket.onopen = (evt) => {
+            debug('connect onopen=', evt);
+
             this._wsBind(socket);
         };
         socket.onerror = (evt) => {
+            debug('connect onerror=', evt);
+
             this.emit('transport:error', evt);
             this._wsDisconnect(socket, evt);
         };
         socket.onclose = (evt) => {
+            debug('connect onclose=', evt);
+
             this.emit('transport:close', evt);
             this._wsDisconnect(socket, evt);
         }
@@ -136,6 +146,8 @@ export class Client extends EventEmitter {
     }
 
     protected _wsDisconnect(socket: WebSocket, reason?: any): void {
+        debug('disconnect reason=', reason);
+
         try {
             if (socket) {
                 socket.onopen = null;
@@ -185,9 +197,13 @@ export class Client extends EventEmitter {
         if (this.resource) message.resource = this.resource;
 
         this._wsSend(message).then((ack) => {
+            debug('authentication ack=', ack);
+
             this.status = ConnectionStatus.Authenticated;
             this.emit('authenticated', ack);
         }, (err) => {
+            debug('authentication error=', err);
+
             this.emit('protocol:error', err);
             this._wsDisconnect(this._socket, err);
         });
@@ -199,6 +215,8 @@ export class Client extends EventEmitter {
             var message = JSON.parse(evt.data);
             if (message.type === 'error') {
                 if (message.code === 'auth_failed') {
+                    debug('authentication failure=', message);
+
                     this._wsDisconnect(this._socket, message);
                 } else {
                     this.emit('protocol:error', message);
@@ -244,6 +262,8 @@ export class Client extends EventEmitter {
         try {
             this._socket.send(data);
         } catch (err) {
+            debug('send exception=', err);
+
             this.emit('transport:error', err);
             return Promise.reject(new MessageSendError('An error occurred in the transport.', MessageSendErrorCause.Transport, err, message));
         }
@@ -256,6 +276,8 @@ export class Client extends EventEmitter {
                 message: message,
                 deferred: deferred,
                 timeout: setTimeout(() => {
+                    debug('send timeout');
+
                     deferred.reject(new MessageSendError('Did not receive acknowledgement in the timeout period.', MessageSendErrorCause.NoAck, void 0, message))
                 }, timeout)
             };
@@ -264,9 +286,13 @@ export class Client extends EventEmitter {
                 delete this._needsAck[id];
             }
             return deferred.promise.then((ack) => {
+                debug('send ack=', ack);
+
                 cleanup();
                 return ack;
             }, (err) => {
+                debug('send error=', err);
+
                 cleanup();
                 throw new MessageSendError('An error occurred during promise resolution', MessageSendErrorCause.Promise, err, message);
             });
