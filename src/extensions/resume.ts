@@ -32,7 +32,12 @@ export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions = {}) {
             }, (err) => {
                 debug('error=', err);
 
-                client.disconnect(new Error('pong'));
+                // if the socket is closed, it will trigger a `disconnected` event, which will in turn trigger `doResume`, and then any messages
+                // awaiting acknowledgement will be rejected.  In this order of events, the resume process has already begun, so we do not want to
+                // disconnect here.
+                if (resumeAttempts === 0) {
+                    client.disconnect(new Error('pong'));
+                }
             });
         }
 

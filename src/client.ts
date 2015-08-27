@@ -249,6 +249,8 @@ export class Client extends EventEmitter {
             return Promise.reject(new MessageSendError('Cannot send data across a socket that is not connected.', MessageSendErrorCause.NoAuth));
         }
 
+        debug('send message=', message);
+
         var data;
         try {
             data = JSON.stringify(message);

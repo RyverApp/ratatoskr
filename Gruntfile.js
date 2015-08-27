@@ -17,7 +17,7 @@ module.exports = function(grunt) {
             }
         },
         'webpack': {
-            'build': require('./webpack.config')
+            'build': require('./webpack.config')(grunt)
         },
         'uglify': {
             'build': {
@@ -28,4 +28,5 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('build', ['webpack:build', 'uglify:build']);
+    grunt.registerTask('default', ['build']);
 };
