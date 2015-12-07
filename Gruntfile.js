@@ -5,17 +5,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
     grunt.initConfig({
-        'dtsGenerator': {
-            options: {
-                name: 'ratatoskr',
-                main: 'ratatoskr/main',
-                baseDir: 'src',
-                out: 'ratatoskr.d.ts',
-            },
-            default: {
-                src: [ 'src/main.ts' ]
-            }
-        },
         'webpack': {
             'build': require('./webpack.config')(grunt)
         },
