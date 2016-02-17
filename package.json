@@ -6,7 +6,7 @@
     "debug": "^2.2.0",
     "es6-promise": "^2.3.0",
     "shortid": "^2.2.2",
-    "ws": "^0.7.2"
+    "ws": "^1.0.1"
   },
   "devDependencies": {
     "awesome-typescript-loader": "^0.14.0",
