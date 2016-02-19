@@ -32,5 +32,8 @@
         "./typings/vendor/debug.d.ts",
         "./typings/vendor/object-tree.d.ts",
         "./typings/ws/ws.d.ts"
-    ]
+    ],
+    "atom": {
+        "rewriteTsconfig": true
+    }
 }

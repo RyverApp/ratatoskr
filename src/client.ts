@@ -262,10 +262,13 @@ export class Client extends EventEmitter {
         this.emit('raw:outgoing', data);
 
         try {
-            this._socket.send(data);
+            const socket = this._socket;
+            socket.send(data);
+            if (socket !== this._socket) {
+                throw new Error('Socket was destroyed during send.');
+            }
         } catch (err) {
             debug('send exception=', err);
-
             this.emit('transport:error', err);
             return Promise.reject(new MessageSendError('An error occurred in the transport.', MessageSendErrorCause.Transport, err, message));
         }
@@ -279,7 +282,6 @@ export class Client extends EventEmitter {
                 deferred: deferred,
                 timeout: setTimeout(() => {
                     debug('send timeout');
-
                     deferred.reject(new MessageSendError('Did not receive acknowledgement in the timeout period.', MessageSendErrorCause.NoAck, void 0, message))
                 }, timeout)
             };
