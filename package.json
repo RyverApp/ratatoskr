@@ -4,19 +4,27 @@
   "version": "2.0.0",
   "dependencies": {
     "debug": "^2.2.0",
-    "es6-promise": "^2.3.0",
-    "shortid": "^2.2.2",
-    "ws": "^1.0.1"
+    "es6-promise": "^3.2.1",
+    "shortid": "^2.2.6",
+    "ws": "^1.1.0"
   },
   "devDependencies": {
-    "awesome-typescript-loader": "^0.14.0",
-    "grunt": "^0.4.5",
-    "grunt-contrib-uglify": "^0.11.0",
-    "grunt-contrib-watch": "^0.6.1",
+    "awesome-typescript-loader": "^0.19.0",
+    "grunt": "^1.0.1",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
     "grunt-tsconfig-update": "0.0.1",
     "grunt-webpack": "^1.0.11",
-    "typescript": "^1.6.2",
-    "webpack": "^1.12.2",
+    "lodash": "^4.13.1",
+    "ts-loader": "^0.8.1",
+    "tsconfig-glob": "^0.4.3",
+    "typescript": "^1.8.10",
+    "webpack": "^1.13.1",
     "webpack-strip": "^0.1.0"
+  },
+  "scripts": {
+    "watch": "tsc -w",
+    "sync": "tsconfig .",
+    "build": "webpack"
   }
 }

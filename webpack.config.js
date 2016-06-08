@@ -1,7 +1,8 @@
 var path = require('path'),
-    webpack = require('webpack');
+    webpack = require('webpack'),
+    _ = require('lodash');
 
-module.exports = {
+var common = {
     resolve: {
         extensions: ['', '.ts', '.js']
     },
@@ -9,13 +10,12 @@ module.exports = {
         loaders: [{
             test: /\.ts$/,
             loaders: [
-                // 'webpack-strip?strip[]=debug,strip[]=console.log',
-                'awesome-typescript-loader?emitRequireType=false&doTypeCheck=false'
+                /*'webpack-strip?strip[]=debug,strip[]=console.log',*/
+                'ts'
             ]
         }]
-    },
-    plugins: [
-    ],
+    },    
+    plugins: [],
     externals: [{
         'ws': 'var WebSocket'
     }],
@@ -23,11 +23,34 @@ module.exports = {
         'ratatoskr': [
             './src/main.ts'
         ]
-    },
-    debug: false,
+    },    
     output: {
         library: 'Ratatoskr',
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].js'
     }
 };
+
+module.exports = [
+    _.merge({}, common),
+    _.merge({}, common, {
+        plugins: [
+            new webpack.DefinePlugin({
+                'process.env': {
+                    'NODE_ENV': '"production"'
+                }
+            }),
+            new webpack.optimize.UglifyJsPlugin({
+                compress: {
+                    warnings: false
+                },
+                output: {
+                    comments: false
+                }
+            })
+        ],
+        output: {
+            filename: '[name].min.js'
+        }
+    })
+];

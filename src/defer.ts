@@ -1,8 +1,8 @@
-/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../typings/index.d.ts" />
 
 import {Promise} from 'es6-promise';
 
-export interface Deferred {
+export interface Deferred { 
     promise: Promise<any>;
     resolve: (value?: any) => void; 
     reject: (reason?: any) => void;

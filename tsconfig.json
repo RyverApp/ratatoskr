@@ -1,39 +1,48 @@
 {
-    "version": "1.6.2",
     "compileOnSave": true,
     "compilerOptions": {
         "target": "es5",
         "module": "commonjs",
-        "declaration": false,
+        "moduleResolution": "node",
+        "isolatedModules": false,
+        "jsx": "react",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "declaration": true,
         "noImplicitAny": false,
         "removeComments": true,
         "noLib": false,
-        "outDir": "./lib",
         "rootDir": "./src",
+        "outDir": "./lib",
+        "inlineSourceMap": true,
+        "inlineSources": true,
         "preserveConstEnums": true,
-        "suppressImplicitAnyIndexErrors": true
+        "suppressImplicitAnyIndexErrors": true,
+        "forceConsistentCasingInFileNames": true
     },
     "filesGlob": [
         "./src/**/*.ts",
-        "./typings/**/*.ts"
+        "./typings/**/*.d.ts"
     ],
     "files": [
+        "./src/interfaces.d.ts",
+        "./typings/globals/es6-promise/index.d.ts",
+        "./typings/globals/jasmine/index.d.ts",
+        "./typings/globals/node/index.d.ts",
+        "./typings/globals/ws/index.d.ts",
+        "./typings/index.d.ts",
+        "./typings/vendor/debug/index.d.ts",
+        "./typings/vendor/shortid/index.d.ts",
         "./src/client.ts",
         "./src/defer.ts",
         "./src/extensions/presence-batch.ts",
         "./src/extensions/resume.ts",
-        "./src/interfaces.d.ts",
-        "./src/main.ts",
-        "./typings/es6-promise/es6-promise.d.ts",
-        "./typings/jasmine/jasmine.d.ts",
-        "./typings/node/node.d.ts",
-        "./typings/shortid/shortid.d.ts",
-        "./typings/tsd.d.ts",
-        "./typings/vendor/debug.d.ts",
-        "./typings/vendor/object-tree.d.ts",
-        "./typings/ws/ws.d.ts"
+        "./src/main.ts"
     ],
     "atom": {
+        "rewriteTsconfig": true
+    },
+    "vscode": {
         "rewriteTsconfig": true
     }
 }

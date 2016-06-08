@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../typings/index.d.ts" />
 
 import {Client as _Client, ConnectionStatus as _ConnectionStatus, MessageSendError as _MessageSendError, MessageSendErrorCause as _MessageSendErrorCause} from './client';
 export var Client = _Client;

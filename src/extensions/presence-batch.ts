@@ -1,4 +1,4 @@
-/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="../../typings/index.d.ts" />
 
 import {Client} from '../client';
 import {PresenceChangeMessage} from '../interfaces.d';
