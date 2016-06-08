@@ -1,6 +1,8 @@
+/// <reference path="../../typings/index.d.ts" />
 import { Client } from '../client';
 export interface ResumeOptions {
     ping?: number;
     retry?: number;
+    steps?: Array<number>;
 }
-export declare function resume({ping, retry}?: ResumeOptions): (client: Client) => void;
+export declare function resume({ping, retry, steps}?: ResumeOptions): (client: Client) => void;

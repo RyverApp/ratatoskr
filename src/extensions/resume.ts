@@ -3,13 +3,15 @@
 import {Client} from '../client';
 
 const debug: Debug.Logger = require('debug')('ratatoskr:resume');
+const RESUME_STEPS = [200, 1*1000, 5*1000, 10*1000, 30*1000, 60*1000]; // 0s, 1s, 5s, 10s, 30s, 60s
 
 export interface ResumeOptions {
     ping?: number;
     retry?: number;
+    steps?: Array<number>;
 }
 
-export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions = {}) {
+export function resume({ping = 10 * 1000, retry = 6, steps = RESUME_STEPS}: ResumeOptions = {}) {
     return (client: Client) => {
         var prevAckAt: number, thisAckAt: number;
         var pingTimeout: any;
@@ -51,9 +53,9 @@ export function resume({ping = 10 * 1000, retry = 5}: ResumeOptions = {}) {
                 return;
             }
 
-            debug('attempt=', resumeAttempts);
+            var resumeDelay = steps[Math.min(resumeAttempts, steps.length) - 1];
 
-            var resumeDelay = (Math.max(0, (4 * Math.pow(resumeAttempts, 2)) - (5 * resumeAttempts) + 4)) * 1000; // 3s, 10s, 25s, 48s, etc
+            debug('attempt=', resumeAttempts, resumeDelay);
 
             client.emit('resume', resumeDelay, resumeAttempts);
 

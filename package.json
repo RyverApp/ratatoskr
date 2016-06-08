@@ -8,13 +8,7 @@
     "shortid": "^2.2.6",
     "ws": "^1.1.0"
   },
-  "devDependencies": {
-    "awesome-typescript-loader": "^0.19.0",
-    "grunt": "^1.0.1",
-    "grunt-contrib-uglify": "^1.0.1",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-tsconfig-update": "0.0.1",
-    "grunt-webpack": "^1.0.11",
+  "devDependencies": {    
     "lodash": "^4.13.1",
     "ts-loader": "^0.8.1",
     "tsconfig-glob": "^0.4.3",
@@ -23,8 +17,9 @@
     "webpack-strip": "^0.1.0"
   },
   "scripts": {
+    "build": "tsc",
     "watch": "tsc -w",
     "sync": "tsconfig .",
-    "build": "webpack"
+    "package": "webpack"
   }
 }
