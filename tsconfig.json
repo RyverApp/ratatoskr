@@ -34,7 +34,6 @@
         "./typings/vendor/debug/index.d.ts",
         "./typings/vendor/shortid/index.d.ts",
         "./src/client.ts",
-        "./src/defer.ts",
         "./src/extensions/presence-batch.ts",
         "./src/extensions/resume.ts",
         "./src/main.ts"

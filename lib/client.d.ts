@@ -1,8 +1,7 @@
 /// <reference path="../typings/index.d.ts" />
 import { EventEmitter } from 'events';
-import { Deferred } from './defer';
 import * as WebSocket from 'ws';
-import { Message, ChatMessage, PresenceChangeMessage, UserTypingMessage, Ack, PingMessage, TeamJoinMessage, TeamLeaveMessage } from './interfaces.d';
+import { Ack, Error, Other, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound } from './interfaces.d';
 export declare enum ConnectionStatus {
     Disconnected = 0,
     Connecting = 1,
@@ -19,9 +18,8 @@ export interface ConnectionOptions {
 }
 export interface PendingAckContext {
     id: string;
-    message: any;
-    deferred: Deferred;
-    timeout: any;
+    ok: (data: any) => void;
+    error: (err: any) => void;
 }
 export interface AuthorizationFunc {
     (): string;
@@ -41,10 +39,10 @@ export declare enum MessageSendErrorCause {
     Promise = 5,
 }
 export declare class MessageSendError extends Error {
-    data: Message;
+    data: Outbound;
     cause: MessageSendErrorCause;
     source: any;
-    constructor(message: string, cause: MessageSendErrorCause, source?: any, data?: Message);
+    constructor(message: string, cause: MessageSendErrorCause, source?: any, data?: Outbound);
 }
 export declare class Client extends EventEmitter {
     status: ConnectionStatus;
@@ -65,16 +63,19 @@ export declare class Client extends EventEmitter {
     disconnect(reason?: any): void;
     protected _wsDisconnect(socket: WebSocket, reason?: any): void;
     protected _wsBind(socket: WebSocket): void;
+    protected _wsInboundError(message: Error): void;
+    protected _wsInboundAck(message: Ack): void;
+    protected _wsInboundOther(message: Other): void;
     protected _wsMessage(evt: any): void;
     protected _wsError(evt: any): void;
     protected _wsClose(evt: any): void;
-    protected _wsSend(message: Message, timeout?: number): Promise<Ack>;
-    send(message: Message): Promise<Ack>;
-    _ensureCanAck(ack: boolean, message: Message): Message;
-    sendPing(message?: PingMessage, ack?: boolean): Promise<Ack>;
-    sendChat(message: ChatMessage, ack?: boolean): Promise<Ack>;
-    sendPresenceChange(message: PresenceChangeMessage, ack?: boolean): Promise<Ack>;
-    sendUserTyping(message: UserTypingMessage, ack?: boolean): Promise<Ack>;
-    sendTeamJoin(message: TeamJoinMessage, ack?: boolean): Promise<Ack>;
-    sendTeamLeave(message: TeamLeaveMessage, ack?: boolean): Promise<Ack>;
+    protected _wsSend(message: Outbound, timeout?: number): Promise<Ack>;
+    send(message: Outbound): Promise<Ack>;
+    _ensureCanAck(ack: boolean, message: Outbound): Outbound;
+    sendPing(message?: Ping, ack?: boolean): Promise<Ack>;
+    sendChat(message: Chat, ack?: boolean): Promise<Ack>;
+    sendPresenceChange(message: PresenceChange, ack?: boolean): Promise<Ack>;
+    sendUserTyping(message: UserTyping, ack?: boolean): Promise<Ack>;
+    sendTeamJoin(message: TeamJoin, ack?: boolean): Promise<Ack>;
+    sendTeamLeave(message: TeamLeave, ack?: boolean): Promise<Ack>;
 }

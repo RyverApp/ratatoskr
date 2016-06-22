@@ -24,7 +24,7 @@ export function resume({ping = 10 * 1000, retry = 6, steps = RESUME_STEPS}: Resu
 
             debug('ping=', msg);
 
-            client.sendPing({}).then((ack) => {
+            client.sendPing().then((ack) => {
                 debug('pong=', ack);
 
                 prevAckAt = thisAckAt, thisAckAt = Date.now();

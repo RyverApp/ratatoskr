@@ -1,53 +1,75 @@
 /// <reference path="../typings/index.d.ts" />
 
-export interface Message {
-    id?: string;
-    type?: string;
-}
-
 export interface Ack {
-    type: string;
+    type: 'ack';
+    id?: string;        
     reply_to: string;
     reply_type: string;
+    response?: any;
+    error?: any;
 }
 
-export interface ErrorMessage extends Message {
+export interface Error {
+    type: 'error';
+    id?: string;
     code: string;
     text: string;
+    data?: any;
 }
 
-export interface AuthMessage extends Message {
-    authorization?: string;
+export interface Other {
+    type: string;     
+    id?: string;
+}
+
+export interface Auth {
+    type: 'auth';
+    id?: string;
+    authorization: string;
     resource?: string;
     agent?: string;
 }
 
-export interface ChatMessage extends Message {
+export interface Chat {
+    type: 'chat';
+    id?: string;
     to: string;
     from?: string;
     text: string;
     extras?: any;
 }
 
-export interface PresenceChangeMessage extends Message {
+export interface PresenceChange {
+    type: 'presence_change',
+    id?: string;
     to: string;
     from?: string;
     presence: string;
 }
 
-export interface UserTypingMessage extends Message {
+export interface UserTyping {
+    type: 'user_typing',
+    id?: string;
     to: string;
     from?: string;
 }
 
-export interface PingMessage extends Message {
-
+export interface Ping {
+    type: 'ping';
+    id?: string;
 }
 
-export interface TeamJoinMessage extends Message {
+export interface TeamJoin {
+    type: 'team_join';
+    id?: string;
     to: string;
 }
 
-export interface TeamLeaveMessage extends Message {
+export interface TeamLeave {
+    type: 'team_leave';
+    id?: string;
     to: string;
 }
+
+export type Outbound = Auth | Chat | PresenceChange | UserTyping | Ping | TeamJoin | TeamLeave | Other;
+export type Inbound = Ack | Error | Other;  

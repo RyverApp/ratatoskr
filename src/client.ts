@@ -2,10 +2,9 @@
 
 import {EventEmitter} from 'events';
 import * as url from 'url';
-import defer, {Deferred} from './defer';
 import * as WebSocket from 'ws';
 import * as shortid from 'shortid';
-import {Message, AuthMessage, ChatMessage, PresenceChangeMessage, UserTypingMessage, Ack, PingMessage, TeamJoinMessage, TeamLeaveMessage} from './interfaces.d';
+import {Ack, Error, Other, Auth, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, Inbound} from './interfaces.d';
 
 const debug: Debug.Logger = require('debug')('ratatoskr:client');
 
@@ -26,11 +25,10 @@ export interface ConnectionOptions {
 }
 
 
-export interface PendingAckContext {
-    id: string;
-    message: any;
-    deferred: Deferred;
-    timeout: any;
+export interface PendingAckContext { 
+    id: string;     
+    ok: (data:any) => void;
+    error: (err:any) => void;
 }
 
 export interface AuthorizationFunc {
@@ -55,16 +53,16 @@ export enum MessageSendErrorCause {
 }
 
 export class MessageSendError extends Error {
-    data: Message;
+    data: Outbound;
     cause: MessageSendErrorCause;
     source: any;
 
-    constructor(message: string, cause: MessageSendErrorCause, source?: any, data?: Message) {
+    constructor(message: string, cause: MessageSendErrorCause, source?: any, data?: Outbound) {
         super(message);
 
         this.cause = cause;
         this.source = source;
-        this.data = data;
+        this.data = data;        
     }
 }
 
@@ -163,7 +161,7 @@ export class Client extends EventEmitter {
         }
 
         Object.keys(this._needsAck).forEach((k) => {
-            this._needsAck[k].deferred.reject(reason);
+            this._needsAck[k].error(reason);
         }), this._needsAck = {};
 
         this.status = ConnectionStatus.Disconnected;
@@ -187,7 +185,7 @@ export class Client extends EventEmitter {
 
         auth = typeof this.authorization === 'function' ? (<AuthorizationFunc>this.authorization)() : <string>this.authorization;
 
-        var message = <AuthMessage>{
+        var message = <Auth>{
             id: this.nextId(),
             type: 'auth',
             authorization: auth
@@ -209,25 +207,41 @@ export class Client extends EventEmitter {
         });
     }
 
+    protected _wsInboundError(message: Error) {
+        if (message.code === 'auth_failed') {
+            debug('authentication failure=', message);
+            this._wsDisconnect(this._socket, message);
+        } else {
+            this.emit('protocol:error', message);
+            const ack = this._needsAck[message.id];                    
+            if (ack) {
+                ack.error(message);
+            }
+        }
+    }
+
+    protected _wsInboundAck(message: Ack) {
+        const ack = this._needsAck[message.reply_to];                
+        if (ack) {
+            message.error ? ack.error(message.error) : ack.ok(message);
+        }
+    }
+
+    protected _wsInboundOther(message: Other) {
+        this.emit(`${message.type}`, message);
+    }
+
     protected _wsMessage(evt) {
         try {
             this.emit('raw:incomming', evt.data);
-            var message = JSON.parse(evt.data);
+            const message = <Inbound>JSON.parse(evt.data);
+            debug('receive=', message);            
             if (message.type === 'error') {
-                if (message.code === 'auth_failed') {
-                    debug('authentication failure=', message);
-
-                    this._wsDisconnect(this._socket, message);
-                } else {
-                    this.emit('protocol:error', message);
-                }
+                this._wsInboundError(<Error>message);
             } else if (message.type === 'ack') {
-                var id = message.reply_to;
-                if (this._needsAck[id]) {
-                    this._needsAck[id].deferred.resolve(message);
-                }
-            } else if (message.type) {
-                this.emit(`${message.type}`, message);
+                this._wsInboundAck(<Ack>message);
+            } else {
+                this._wsInboundOther(<Other>message);
             }
         } catch (err) {
             this.emit('protocol:error', err);
@@ -244,12 +258,12 @@ export class Client extends EventEmitter {
         this._wsDisconnect(this._socket, evt);
     }
 
-    protected _wsSend(message: Message, timeout: number = this.timeout): Promise<Ack> {
+    protected _wsSend(message: Outbound, timeout: number = this.timeout): Promise<Ack> {
         if (this.status < ConnectionStatus.Connected) {
             return Promise.reject(new MessageSendError('Cannot send data across a socket that is not connected.', MessageSendErrorCause.NoAuth));
         }
 
-        debug('send message=', message);
+        debug('send=', message);
 
         var data;
         try {
@@ -263,86 +277,83 @@ export class Client extends EventEmitter {
 
         try {
             const socket = this._socket;
-            socket.send(data);
+            socket.send(data);             
             if (socket !== this._socket) {
                 throw new Error('Socket was destroyed during send.');
             }
         } catch (err) {
-            debug('send exception=', err);
+            debug('send err=', err);
             this.emit('transport:error', err);
             return Promise.reject(new MessageSendError('An error occurred in the transport.', MessageSendErrorCause.Transport, err, message));
         }
 
         if (message.id) {
-            var id = message.id;
-            var deferred = defer();
-            var pending = this._needsAck[id] = {
-                id: id,
-                message: message,
-                deferred: deferred,
-                timeout: setTimeout(() => {
-                    debug('send timeout');
-                    deferred.reject(new MessageSendError('Did not receive acknowledgement in the timeout period.', MessageSendErrorCause.NoAck, void 0, message))
-                }, timeout)
-            };
-            var cleanup = () => {
-                clearTimeout(pending.timeout);
+            const id = message.id;
+            const context = this._needsAck[id] = <PendingAckContext>{id:id};
+            const promise = new Promise((ok, err) => {
+                context.ok = ok;
+                context.error = err;
+            });        
+            const timer = setTimeout(() => {
+                debug('ack timeout=', timeout);
+                context.error(new MessageSendError('Did not receive acknowledgement in the timeout period.', MessageSendErrorCause.NoAck, void 0, message))
+            }, timeout);
+            const cleanup = () => {
+                clearTimeout(timer);
                 delete this._needsAck[id];
-            }
-            return deferred.promise.then((ack) => {
-                debug('send ack=', ack);
-
+            };            
+            return promise.then((ack:Ack) => {
+                debug('ack=', ack);
                 cleanup();
                 return ack;
             }, (err) => {
-                debug('send error=', err);
-
+                debug('ack error=', err);
                 cleanup();
                 throw new MessageSendError('An error occurred during promise resolution', MessageSendErrorCause.Promise, err, message);
-            });
+            });        
         } else {
             return Promise.resolve();
         }
     }
 
-    send(message: Message): Promise<Ack> {
+    send(message: Outbound): Promise<Ack> {
         if (this.status < ConnectionStatus.Authenticated) {
             return Promise.reject(new MessageSendError('Cannot send data across a socket that is not authenticated.', MessageSendErrorCause.NoAuth, void 0, message));
         }
         return this._wsSend(message);
     }
 
-    _ensureCanAck(ack: boolean, message: Message): Message {
+    _ensureCanAck(ack: boolean, message: Outbound): Outbound {
         if (ack && !('id' in message)) { message.id = this.nextId(); }
         return message;
     }
 
-    sendPing(message: PingMessage = {}, ack: boolean = true): Promise<Ack> {
+    sendPing(message: Ping = <Ping>{}, ack: boolean = true): Promise<Ack> {
         message.type = 'ping';
         return this.send(this._ensureCanAck(ack, message));
     }
 
-    sendChat(message: ChatMessage, ack: boolean = true): Promise<Ack> {
+    sendChat(message: Chat, ack: boolean = true): Promise<Ack> {
         message.type = 'chat';
         return this.send(this._ensureCanAck(ack, message));
     }
 
-    sendPresenceChange(message: PresenceChangeMessage, ack: boolean = false): Promise<Ack> {
+    sendPresenceChange(message: PresenceChange, ack: boolean = false): Promise<Ack> {
         message.type = 'presence_change';
         return this.send(this._ensureCanAck(ack, message));
     }
 
-    sendUserTyping(message: UserTypingMessage, ack: boolean = false): Promise<Ack> {
+    sendUserTyping(message: UserTyping, ack: boolean = false): Promise<Ack> {
         message.type = 'user_typing';
         return this.send(this._ensureCanAck(ack, message));
     }
 
-    sendTeamJoin(message: TeamJoinMessage, ack: boolean = false): Promise<Ack> {
+    sendTeamJoin(message: TeamJoin, ack: boolean = false): Promise<Ack> {
         message.type = 'team_join';
         return this.send(this._ensureCanAck(ack, message));
     }
 
-    sendTeamLeave(message: TeamLeaveMessage, ack: boolean = false): Promise<Ack> {
+    sendTeamLeave(message: TeamLeave, ack: boolean = false): Promise<Ack> {
         message.type = 'team_leave';
         return this.send(this._ensureCanAck(ack, message));
     }
