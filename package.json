@@ -8,7 +8,7 @@
     "shortid": "^2.2.6",
     "ws": "^1.1.0"
   },
-  "devDependencies": {    
+  "devDependencies": {
     "lodash": "^4.13.1",
     "ts-loader": "^0.8.1",
     "tsconfig-glob": "^0.4.3",
@@ -17,7 +17,7 @@
     "webpack-strip": "^0.1.0"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc || true",
     "watch": "tsc -w",
     "sync": "tsconfig .",
     "package": "webpack"
