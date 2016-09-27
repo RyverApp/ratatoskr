@@ -9,9 +9,10 @@ export interface ResumeOptions {
     ping?: number;
     retry?: number;
     steps?: Array<number>;
+    jitter?: number;
 }
 
-export function resume({ping = 10 * 1000, retry = 6, steps = RESUME_STEPS}: ResumeOptions = {}) {
+export function resume({ping = 10 * 1000, retry = 6, steps = RESUME_STEPS, jitter = 1800}: ResumeOptions = {}) {
     return (client: Client) => {
         var prevAckAt: number, thisAckAt: number;
         var pingTimeout: any;
@@ -90,7 +91,13 @@ export function resume({ping = 10 * 1000, retry = 6, steps = RESUME_STEPS}: Resu
                 return;
             }
 
-            doResume();
+            if (jitter > 0 && resumeAttempts === 0) {
+                const randomized = jitter*Math.random();
+                debug('jitter first resume attempt=', randomized);
+                setTimeout(() => doResume(), randomized);
+            } else {
+                doResume();
+            }            
         });
     };
 }
