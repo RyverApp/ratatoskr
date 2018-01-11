@@ -1,7 +1,8 @@
-/// <reference path="../typings/index.d.ts" />
+/// <reference types="node" />
+/// <reference types="ws" />
 import { EventEmitter } from 'events';
 import * as WebSocket from 'ws';
-import { Ack, Error, Other, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound } from './interfaces.d';
+import { Ack, Error, Other, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound } from './message-types';
 export declare enum ConnectionStatus {
     Disconnected = 0,
     Connecting = 1,
@@ -44,6 +45,8 @@ export declare class MessageSendError extends Error {
     source: any;
     constructor(message: string, cause: MessageSendErrorCause, source?: any, data?: Outbound);
 }
+/**
+ */
 export declare class Client extends EventEmitter {
     status: ConnectionStatus;
     resource: string;
@@ -58,7 +61,7 @@ export declare class Client extends EventEmitter {
     constructor({endpoint, authorization, timeout, resource, agent, extensions}?: ConnectionOptions);
     use(ext: Extension): any;
     use(ext: ExtensionAsFunc): any;
-    nextId(): string;
+    nextId(): any;
     connect(): void;
     disconnect(reason?: any): void;
     protected _wsDisconnect(socket: WebSocket, reason?: any): void;

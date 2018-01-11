@@ -1,15 +1,13 @@
-/// <reference path="../../typings/index.d.ts" />
-
-import {Client} from '../client';
-import {PresenceChange} from '../interfaces.d';
+import { Client } from '../client';
+import { PresenceChange } from '../message-types';
 
 export interface PresenceBatchOptions {
     timeout?: number;
 }
 
-export function presenceBatch({timeout = 150}: PresenceBatchOptions = {}) {
+export function presenceBatch({ timeout = 150 }: PresenceBatchOptions = {}) {
     return (client: Client) => {
-        var batch: PresenceChange[] = [],
+        let batch: PresenceChange[] = [],
             batchTimeout: any;
 
         client.on('presence_change', (presence) => {
@@ -19,7 +17,7 @@ export function presenceBatch({timeout = 150}: PresenceBatchOptions = {}) {
         });
 
         function publish() {
-            var data: PresenceChange[];
+            let data: PresenceChange[];
             data = batch, batch = [];
             client.emit('presence_change:batch', data);
         }

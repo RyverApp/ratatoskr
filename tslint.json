@@ -1,0 +1,69 @@
+{
+    "rulesDirectory": [
+        "node_modules/tslint-microsoft-contrib",
+        "node_modules/tslint-react/rules",
+        "node_modules/tslint-eslint-rules/dist/rules"
+    ],
+    "rules": {
+        "align": [true, "statements"],
+        "class-name": true,
+        "curly": [true, "ignore-same-line"],
+        "eofline": true,        
+        "no-for-in": true,
+        "indent": [true, "spaces", 4],
+        "object-curly-spacing": [true,
+            "always"
+        ],
+        "label-position": true,
+        "max-line-length": [true, 200],
+        "no-debugger": true,
+        "no-console": [true,
+            "debug",
+            "info",
+            "time",
+            "timeEnd",
+            "trace"
+        ],
+        "prefer-const": true,
+        "no-consecutive-blank-lines": true,
+        "no-construct": true,        
+        "no-duplicate-variable": true,
+        "no-empty": true,
+        "no-eval": true,
+        "no-arg": true,
+        "no-var-keyword": true,
+        "no-switch-case-fall-through": true,
+        "no-trailing-whitespace": false,
+        "no-unused-expression": true,
+        "one-line": [true,
+            "check-open-brace",
+            "check-catch",
+            "check-else",
+            "check-whitespace"
+        ],
+        "quotemark": [true, "single", "jsx-double"],
+        "radix": true,
+        "semicolon": [true, "ignore-bound-class-methods"],
+        "triple-equals": true,
+        "variable-name": false,
+        "whitespace": [true,
+            "check-branch",
+            "check-decl",
+            "check-operator",
+            "check-separator",
+            "check-type"
+        ],
+        "jsx-no-string-ref": true,
+        "jsx-use-translation-function": false,        
+        "jsx-no-bind": true,
+        "jsx-no-lambda": true,
+        "jsx-curly-spacing": [true, "never"],
+        "jsx-equals-spacing": [true, "never"],
+        "jsx-self-close": true,
+        "jsx-alignment": true,
+        "react-unused-props-and-state": [false, {
+            "props-interface-regex": "Props$",
+            "state-interface-regex": "State$"
+        }]
+    }
+}

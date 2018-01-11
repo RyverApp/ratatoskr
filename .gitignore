@@ -3,6 +3,7 @@ Thumbs.db
 *.DS_Store
 
 .idea/
+.rpt2_cache/
 *.iml
 *.patch
 *.swp
@@ -12,4 +13,4 @@ npm-debug.log
 node_modules
 bower_components
 
-dist/
+out/

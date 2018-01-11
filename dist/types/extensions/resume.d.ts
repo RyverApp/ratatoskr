@@ -1,4 +1,3 @@
-/// <reference path="../../typings/index.d.ts" />
 import { Client } from '../client';
 export interface ResumeOptions {
     ping?: number;

@@ -1,14 +1,11 @@
-/// <reference path="../typings/index.d.ts" />
-
 export interface Ack {
     type: 'ack';
-    id?: string;        
+    id?: string;
     reply_to: string;
     reply_type: string;
     response?: any;
     error?: any;
 }
-
 export interface Error {
     type: 'error';
     id?: string;
@@ -16,12 +13,10 @@ export interface Error {
     text: string;
     data?: any;
 }
-
 export interface Other {
-    type: string;     
+    type: string;
     id?: string;
 }
-
 export interface Auth {
     type: 'auth';
     id?: string;
@@ -29,7 +24,6 @@ export interface Auth {
     resource?: string;
     agent?: string;
 }
-
 export interface Chat {
     type: 'chat';
     id?: string;
@@ -38,38 +32,32 @@ export interface Chat {
     text: string;
     extras?: any;
 }
-
 export interface PresenceChange {
-    type: 'presence_change',
+    type: 'presence_change';
     id?: string;
     to: string;
     from?: string;
     presence: string;
 }
-
 export interface UserTyping {
-    type: 'user_typing',
+    type: 'user_typing';
     id?: string;
     to: string;
     from?: string;
 }
-
 export interface Ping {
     type: 'ping';
     id?: string;
 }
-
 export interface TeamJoin {
     type: 'team_join';
     id?: string;
     to: string;
 }
-
 export interface TeamLeave {
     type: 'team_leave';
     id?: string;
     to: string;
 }
-
-export type Outbound = Auth | Chat | PresenceChange | UserTyping | Ping | TeamJoin | TeamLeave | Other;
-export type Inbound = Ack | Error | Other;  
+export declare type Outbound = Auth | Chat | PresenceChange | UserTyping | Ping | TeamJoin | TeamLeave | Other;
+export declare type Inbound = Ack | Error | Other;
