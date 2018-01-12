@@ -61,7 +61,7 @@ export declare class Client extends EventEmitter {
     constructor({endpoint, authorization, timeout, resource, agent, extensions}?: ConnectionOptions);
     use(ext: Extension): any;
     use(ext: ExtensionAsFunc): any;
-    nextId(): any;
+    nextId(): string;
     connect(): void;
     disconnect(reason?: any): void;
     protected _wsDisconnect(socket: WebSocket, reason?: any): void;

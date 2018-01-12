@@ -1,9 +1,10 @@
 import { EventEmitter } from 'events';
 import * as WebSocket from 'ws';
 import { Ack, Error, Other, Auth, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, Inbound } from './message-types';
+import debug from 'debug';
+import * as shortid from 'shortid';
 
-const shortid = require('shortid');
-const debug: debug.IDebugger = require('debug')('ratatoskr:client');
+const log = debug('ratatoskr:client');
 
 export enum ConnectionStatus {
     Disconnected = 0,
@@ -110,25 +111,25 @@ export class Client extends EventEmitter {
 
         this.status = ConnectionStatus.Connecting;
 
-        debug('connect endpoint=', this.endpoint);
+        log('connect endpoint=', this.endpoint);
 
         this.emit('connecting');
 
         const socket = new WebSocket(this.endpoint, ['ratatoskr']);
 
         socket.onopen = (evt) => {
-            debug('connect onopen=', evt);
+            log('connect onopen=', evt);
 
             this._wsBind(socket);
         };
         socket.onerror = (evt) => {
-            debug('connect onerror=', evt);
+            log('connect onerror=', evt);
 
             this.emit('transport:error', evt);
             this._wsDisconnect(socket, evt);
         };
         socket.onclose = (evt) => {
-            debug('connect onclose=', evt);
+            log('connect onclose=', evt);
 
             this.emit('transport:close', evt);
             this._wsDisconnect(socket, evt);
@@ -140,7 +141,7 @@ export class Client extends EventEmitter {
     }
 
     protected _wsDisconnect(socket: WebSocket, reason?: any): void {
-        debug('disconnect reason=', reason);
+        log('disconnect reason=', reason);
 
         try {
             if (socket) {
@@ -191,12 +192,12 @@ export class Client extends EventEmitter {
         if (this.resource) message.resource = this.resource;
 
         this._wsSend(message).then((ack) => {
-            debug('authentication ack=', ack);
+            log('authentication ack=', ack);
 
             this.status = ConnectionStatus.Authenticated;
             this.emit('authenticated', ack);
         }, (err) => {
-            debug('authentication error=', err);
+            log('authentication error=', err);
 
             this.emit('protocol:error', err);
             this._wsDisconnect(this._socket, err);
@@ -205,7 +206,7 @@ export class Client extends EventEmitter {
 
     protected _wsInboundError(message: Error) {
         if (message.code === 'auth_failed') {
-            debug('authentication failure=', message);
+            log('authentication failure=', message);
             this._wsDisconnect(this._socket, message);
         } else {
             this.emit('protocol:error', message);
@@ -231,7 +232,7 @@ export class Client extends EventEmitter {
         try {
             this.emit('raw:incomming', evt.data);
             const message = <Inbound>JSON.parse(evt.data);
-            debug('receive=', message);
+            log('receive=', message);
             if (message.type === 'error') {
                 this._wsInboundError(<Error>message);
             } else if (message.type === 'ack') {
@@ -259,7 +260,7 @@ export class Client extends EventEmitter {
             return Promise.reject(new MessageSendError('Cannot send data across a socket that is not connected.', MessageSendErrorCause.NoAuth));
         }
 
-        debug('send=', message);
+        log('send=', message);
 
         let data;
         try {
@@ -278,7 +279,7 @@ export class Client extends EventEmitter {
                 throw new Error('Socket was destroyed during send.');
             }
         } catch (err) {
-            debug('send err=', err);
+            log('send err=', err);
             this.emit('transport:error', err);
             return Promise.reject(new MessageSendError('An error occurred in the transport.', MessageSendErrorCause.Transport, err, message));
         }
@@ -291,7 +292,7 @@ export class Client extends EventEmitter {
                 ctx.error = err;
             });
             const timer = setTimeout(() => {
-                debug('ack timeout=', timeout);
+                log('ack timeout=', timeout);
                 ctx.error(new MessageSendError('Did not receive acknowledgement in the timeout period.', MessageSendErrorCause.NoAck, void 0, message));
             }, timeout);
             const cleanup = () => {
@@ -299,11 +300,11 @@ export class Client extends EventEmitter {
                 delete this._needsAck[id];
             };
             return promise.then((ack: Ack) => {
-                debug('ack=', ack);
+                log('ack=', ack);
                 cleanup();
                 return ack;
             }, (err) => {
-                debug('ack error=', err);
+                log('ack error=', err);
                 cleanup();
                 throw new MessageSendError('An error occurred during promise resolution', MessageSendErrorCause.Promise, err, message);
             });

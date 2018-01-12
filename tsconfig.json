@@ -14,13 +14,15 @@
         "importHelpers": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "declarationDir": "dist/types",
-        "outDir": "out",
+        "allowSyntheticDefaultImports": true,
+        "declarationDir": "es",
+        "outDir": "es",
         "typeRoots": [
             "node_modules/@types"
         ]
     },
     "include": [
-        "src"
+        "src/**/*.ts",        
+        "typings/**/*.d.ts"
     ]
 }
