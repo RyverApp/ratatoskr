@@ -1,13 +1,11 @@
-/// <reference path="../../typings/index.d.ts" />
-
-import {Client} from '../client';
-import {PresenceChange} from '../interfaces.d';
+import { Client } from '../client';
+import { PresenceChange } from '../interfaces.d';
 
 export interface PresenceBatchOptions {
     timeout?: number;
 }
 
-export function presenceBatch({timeout = 150}: PresenceBatchOptions = {}) {
+export function presenceBatch({ timeout = 150 }: PresenceBatchOptions = {}) {
     return (client: Client) => {
         var batch: PresenceChange[] = [],
             batchTimeout: any;

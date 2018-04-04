@@ -1,12 +1,10 @@
-/// <reference path="../typings/index.d.ts" />
-
-import {EventEmitter} from 'events';
+import { EventEmitter } from 'events';
 import * as url from 'url';
 import * as WebSocket from 'ws';
 import * as shortid from 'shortid';
-import {Ack, Error, Other, Auth, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, Inbound} from './interfaces.d';
+import { Ack, Error, Other, Auth, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, Inbound, VoiceChange } from './interfaces.d';
 
-const debug: Debug.Logger = require('debug')('ratatoskr:client');
+const debug: debug.IDebugger = require('debug')('ratatoskr:client');
 
 export enum ConnectionStatus {
     Disconnected = 0,
@@ -25,10 +23,10 @@ export interface ConnectionOptions {
 }
 
 
-export interface PendingAckContext { 
-    id: string;     
-    ok: (data:any) => void;
-    error: (err:any) => void;
+export interface PendingAckContext {
+    id: string;
+    ok: (data: any) => void;
+    error: (err: any) => void;
 }
 
 export interface AuthorizationFunc {
@@ -62,7 +60,7 @@ export class MessageSendError extends Error {
 
         this.cause = cause;
         this.source = source;
-        this.data = data;        
+        this.data = data;
     }
 }
 
@@ -77,9 +75,9 @@ export class Client extends EventEmitter {
     timeout: number = 5 * 1000;
 
     protected _socket: WebSocket;
-    protected _needsAck: {[id:string]:PendingAckContext} = {};
+    protected _needsAck: { [id: string]: PendingAckContext } = {};
 
-    constructor({endpoint, authorization, timeout = 5 * 1000, resource = '', agent = 'Ratatoskr', extensions = []}: ConnectionOptions = {}) {
+    constructor({ endpoint, authorization, timeout = 5 * 1000, resource = '', agent = 'Ratatoskr', extensions = [] }: ConnectionOptions = {}) {
         super();
 
         this.agent = agent;
@@ -213,7 +211,7 @@ export class Client extends EventEmitter {
             this._wsDisconnect(this._socket, message);
         } else {
             this.emit('protocol:error', message);
-            const ack = this._needsAck[message.id];                    
+            const ack = this._needsAck[message.id];
             if (ack) {
                 ack.error(message);
             }
@@ -221,7 +219,7 @@ export class Client extends EventEmitter {
     }
 
     protected _wsInboundAck(message: Ack) {
-        const ack = this._needsAck[message.reply_to];                
+        const ack = this._needsAck[message.reply_to];
         if (ack) {
             message.error ? ack.error(message.error) : ack.ok(message);
         }
@@ -235,7 +233,7 @@ export class Client extends EventEmitter {
         try {
             this.emit('raw:incomming', evt.data);
             const message = <Inbound>JSON.parse(evt.data);
-            debug('receive=', message);            
+            debug('receive=', message);
             if (message.type === 'error') {
                 this._wsInboundError(<Error>message);
             } else if (message.type === 'ack') {
@@ -277,7 +275,7 @@ export class Client extends EventEmitter {
 
         try {
             const socket = this._socket;
-            socket.send(data);             
+            socket.send(data);
             if (socket !== this._socket) {
                 throw new Error('Socket was destroyed during send.');
             }
@@ -289,11 +287,11 @@ export class Client extends EventEmitter {
 
         if (message.id) {
             const id = message.id;
-            const context = this._needsAck[id] = <PendingAckContext>{id:id};
+            const context = this._needsAck[id] = <PendingAckContext>{ id: id };
             const promise = new Promise((ok, err) => {
                 context.ok = ok;
                 context.error = err;
-            });        
+            });
             const timer = setTimeout(() => {
                 debug('ack timeout=', timeout);
                 context.error(new MessageSendError('Did not receive acknowledgement in the timeout period.', MessageSendErrorCause.NoAck, void 0, message))
@@ -301,8 +299,8 @@ export class Client extends EventEmitter {
             const cleanup = () => {
                 clearTimeout(timer);
                 delete this._needsAck[id];
-            };            
-            return promise.then((ack:Ack) => {
+            };
+            return promise.then((ack: Ack) => {
                 debug('ack=', ack);
                 cleanup();
                 return ack;
@@ -310,7 +308,7 @@ export class Client extends EventEmitter {
                 debug('ack error=', err);
                 cleanup();
                 throw new MessageSendError('An error occurred during promise resolution', MessageSendErrorCause.Promise, err, message);
-            });        
+            });
         } else {
             return Promise.resolve();
         }
@@ -340,6 +338,11 @@ export class Client extends EventEmitter {
 
     sendPresenceChange(message: PresenceChange, ack: boolean = false): Promise<Ack> {
         message.type = 'presence_change';
+        return this.send(this._ensureCanAck(ack, message));
+    }
+
+    sendVoiceChange(message: VoiceChange, ack: boolean = false): Promise<Ack> {
+        message.type = 'voice_change';
         return this.send(this._ensureCanAck(ack, message));
     }
 

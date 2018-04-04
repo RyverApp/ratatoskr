@@ -1,6 +1,6 @@
 var path = require('path'),
     webpack = require('webpack'),
-    _ = require('lodash');
+    merge = require('lodash.merge');
 
 var common = {
     resolve: {
@@ -14,7 +14,7 @@ var common = {
                 'ts'
             ]
         }]
-    },    
+    },
     plugins: [],
     externals: [{
         'ws': 'var WebSocket'
@@ -23,7 +23,7 @@ var common = {
         'ratatoskr': [
             './src/main.ts'
         ]
-    },    
+    },
     output: {
         library: 'Ratatoskr',
         path: path.resolve(__dirname, 'dist'),
@@ -32,8 +32,8 @@ var common = {
 };
 
 module.exports = [
-    _.merge({}, common),
-    _.merge({}, common, {
+    merge({}, common),
+    merge({}, common, {
         plugins: [
             new webpack.DefinePlugin({
                 'process.env': {

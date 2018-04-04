@@ -1,25 +1,26 @@
 {
-  "name": "ratatoskr",
-  "main": "./lib/main",
-  "version": "2.0.1",
-  "dependencies": {
-    "debug": "^2.2.0",
-    "es6-promise": "^3.2.1",
-    "shortid": "^2.2.6",
-    "ws": "^1.1.0"
-  },
-  "devDependencies": {
-    "lodash": "^4.13.1",
-    "ts-loader": "^0.8.1",
-    "tsconfig-glob": "^0.4.3",
-    "typescript": "^1.8.10",
-    "webpack": "^1.13.1",
-    "webpack-strip": "^0.1.0"
-  },
-  "scripts": {
-    "build": "tsc || true",
-    "watch": "tsc -w",
-    "sync": "tsconfig .",
-    "package": "webpack"
-  }
+    "name": "ratatoskr",
+    "main": "./lib/main",
+    "version": "2.0.2",
+    "dependencies": {
+        "debug": "2.6.2",
+        "es6-promise": "4.1.0",
+        "shortid": "2.2.8",
+        "ws": "^1.1.0"
+    },
+    "devDependencies": {
+        "@types/debug": "0.0.29",
+        "@types/node": "^9.6.2",
+        "lodash.merge": "4.6.0",
+        "ts-loader": "2.2.1",
+        "typescript": "2.4.1",
+        "webpack": "^1.13.1",
+        "webpack-strip": "^0.1.0"
+    },
+    "scripts": {
+        "build": "tsc || true",
+        "watch": "tsc -w",
+        "sync": "tsconfig .",
+        "package": "webpack"
+    }
 }

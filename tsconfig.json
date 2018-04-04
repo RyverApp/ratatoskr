@@ -12,36 +12,21 @@
         "noImplicitAny": false,
         "removeComments": true,
         "noLib": false,
-        "rootDir": "./src",
-        "outDir": "./lib",
+        "rootDir": "src",
+        "outDir": "lib",
         "inlineSourceMap": true,
         "inlineSources": true,
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true,
-        "forceConsistentCasingInFileNames": true
+        "forceConsistentCasingInFileNames": true,
+        "lib": [
+            "es2015.promise",
+            "es5"
+        ]
     },
-    "filesGlob": [
-        "./src/**/*.ts",
-        "./typings/**/*.d.ts"
-    ],
-    "files": [
-        "./src/interfaces.d.ts",
-        "./typings/globals/es6-promise/index.d.ts",
-        "./typings/globals/jasmine/index.d.ts",
-        "./typings/globals/node/index.d.ts",
-        "./typings/globals/ws/index.d.ts",
-        "./typings/index.d.ts",
-        "./typings/vendor/debug/index.d.ts",
-        "./typings/vendor/shortid/index.d.ts",
-        "./src/client.ts",
-        "./src/extensions/presence-batch.ts",
-        "./src/extensions/resume.ts",
-        "./src/main.ts"
-    ],
-    "atom": {
-        "rewriteTsconfig": true
-    },
-    "vscode": {
-        "rewriteTsconfig": true
-    }
+    "include": [
+        "src/**/*.ts",
+        "node_modules/tslib/*.d.ts",
+        "typings/**/*.d.ts"
+    ]
 }

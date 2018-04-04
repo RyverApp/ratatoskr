@@ -1,7 +1,7 @@
-/// <reference path="../typings/index.d.ts" />
+/// <reference types="node" />
 import { EventEmitter } from 'events';
 import * as WebSocket from 'ws';
-import { Ack, Error, Other, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound } from './interfaces.d';
+import { Ack, Error, Other, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, VoiceChange } from './interfaces.d';
 export declare enum ConnectionStatus {
     Disconnected = 0,
     Connecting = 1,
@@ -75,6 +75,7 @@ export declare class Client extends EventEmitter {
     sendPing(message?: Ping, ack?: boolean): Promise<Ack>;
     sendChat(message: Chat, ack?: boolean): Promise<Ack>;
     sendPresenceChange(message: PresenceChange, ack?: boolean): Promise<Ack>;
+    sendVoiceChange(message: VoiceChange, ack?: boolean): Promise<Ack>;
     sendUserTyping(message: UserTyping, ack?: boolean): Promise<Ack>;
     sendTeamJoin(message: TeamJoin, ack?: boolean): Promise<Ack>;
     sendTeamLeave(message: TeamLeave, ack?: boolean): Promise<Ack>;

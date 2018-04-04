@@ -1,4 +1,3 @@
-/// <reference path="../../typings/index.d.ts" />
 import { Client } from '../client';
 export interface PresenceBatchOptions {
     timeout?: number;

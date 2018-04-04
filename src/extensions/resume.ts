@@ -1,9 +1,7 @@
-/// <reference path="../../typings/index.d.ts" />
+import { Client } from '../client';
 
-import {Client} from '../client';
-
-const debug: Debug.Logger = require('debug')('ratatoskr:resume');
-const RESUME_STEPS = [200, 1*1000, 5*1000, 10*1000, 30*1000, 60*1000]; // 0s, 1s, 5s, 10s, 30s, 60s
+const debug: debug.IDebugger = require('debug')('ratatoskr:resume');
+const RESUME_STEPS = [200, 1 * 1000, 5 * 1000, 10 * 1000, 30 * 1000, 60 * 1000]; // 0s, 1s, 5s, 10s, 30s, 60s
 
 export interface ResumeOptions {
     ping?: number;
@@ -12,7 +10,7 @@ export interface ResumeOptions {
     jitter?: number;
 }
 
-export function resume({ping = 10 * 1000, retry = 6, steps = RESUME_STEPS, jitter = 1800}: ResumeOptions = {}) {
+export function resume({ ping = 10 * 1000, retry = 6, steps = RESUME_STEPS, jitter = 1800 }: ResumeOptions = {}) {
     return (client: Client) => {
         var prevAckAt: number, thisAckAt: number;
         var pingTimeout: any;
@@ -92,12 +90,12 @@ export function resume({ping = 10 * 1000, retry = 6, steps = RESUME_STEPS, jitte
             }
 
             if (jitter > 0 && resumeAttempts === 0) {
-                const randomized = jitter*Math.random();
+                const randomized = jitter * Math.random();
                 debug('jitter first resume attempt=', randomized);
                 setTimeout(() => doResume(), randomized);
             } else {
                 doResume();
-            }            
+            }
         });
     };
 }
