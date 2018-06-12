@@ -1,5 +1,5 @@
 import { Client } from '../client';
-import { PresenceChange } from '../interfaces.d';
+import { PresenceChange } from '../interfaces';
 
 export interface PresenceBatchOptions {
     timeout?: number;

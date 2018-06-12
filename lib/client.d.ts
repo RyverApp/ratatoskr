@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { EventEmitter } from 'events';
 import * as WebSocket from 'ws';
-import { Ack, Error, Other, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, VoiceChange } from './interfaces.d';
+import { Ack, Error, Other, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, VoiceChange } from './interfaces';
 export declare enum ConnectionStatus {
     Disconnected = 0,
     Connecting = 1,

@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import * as url from 'url';
 import * as WebSocket from 'ws';
 import * as shortid from 'shortid';
-import { Ack, Error, Other, Auth, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, Inbound, VoiceChange } from './interfaces.d';
+import { Ack, Error, Other, Auth, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, Inbound, VoiceChange } from './interfaces';
 
 const debug: debug.IDebugger = require('debug')('ratatoskr:client');
 
@@ -21,7 +21,6 @@ export interface ConnectionOptions {
     timeout?: number;
     extensions?: any[];
 }
-
 
 export interface PendingAckContext {
     id: string;
@@ -64,8 +63,6 @@ export class MessageSendError extends Error {
     }
 }
 
-/**
- */
 export class Client extends EventEmitter {
     status: ConnectionStatus = ConnectionStatus.Disconnected;
     resource: string;
@@ -310,7 +307,7 @@ export class Client extends EventEmitter {
                 throw new MessageSendError('An error occurred during promise resolution', MessageSendErrorCause.Promise, err, message);
             });
         } else {
-            return Promise.resolve();
+            return Promise.resolve({ type: 'ack', reply_to: 'success', reply_type: message.type } as Ack);
         }
     }
 

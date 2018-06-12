@@ -1,5 +1,5 @@
 import { Client } from '../client';
-import { VoiceChange } from '../interfaces.d';
+import { VoiceChange } from '../interfaces';
 
 export interface VoiceBatchOptions {
     timeout?: number;
