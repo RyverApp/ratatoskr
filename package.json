@@ -1,8 +1,9 @@
 {
     "name": "ratatoskr",
     "main": "./lib/main",
-    "version": "2.0.3",
-    "typings": "./lib/ratatoskr.d.ts",
+    "version": "2.0.4",
+    "typings": "./lib/main.d.ts",
+    "types": "./lib/main.d.ts",
     "dependencies": {
         "debug": "2.6.2",
         "es6-promise": "4.1.0",
@@ -20,8 +21,6 @@
     },
     "scripts": {
         "build": "tsc || true",
-        "dts": "dts-bundle --name ratatoskr --main lib/main.d.ts --outputAsModuleFolder",
-        "build-all": "npm run build && npm run dts",
         "watch": "tsc -w",
         "sync": "tsconfig .",
         "package": "webpack"
