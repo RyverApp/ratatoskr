@@ -37,7 +37,7 @@ export declare const PRESENCE_INACTIVE = "inactive";
 export declare const PRESENCE_ACTIVE = "active";
 export declare const PRESENCE_UNAVAILABLE = "unavailable";
 export declare const PRESENCE_AWAY = "away";
-export declare const PRESENCE_AVAILABLE = "awailable";
+export declare const PRESENCE_AVAILABLE = "available";
 export declare const PRESENCE_DND = "dnd";
 export declare type PresenceType = typeof PRESENCE_UNKNOWN | typeof PRESENCE_INACTIVE | typeof PRESENCE_ACTIVE | typeof PRESENCE_UNAVAILABLE | typeof PRESENCE_AWAY | typeof PRESENCE_AVAILABLE | typeof PRESENCE_DND;
 export declare const PresenceTypes: {

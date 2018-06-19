@@ -42,7 +42,7 @@ export const PRESENCE_INACTIVE = 'inactive';
 export const PRESENCE_ACTIVE = 'active';
 export const PRESENCE_UNAVAILABLE = 'unavailable';
 export const PRESENCE_AWAY = 'away';
-export const PRESENCE_AVAILABLE = 'awailable';
+export const PRESENCE_AVAILABLE = 'available';
 export const PRESENCE_DND = 'dnd';
 
 export type PresenceType = typeof PRESENCE_UNKNOWN | typeof PRESENCE_INACTIVE | typeof PRESENCE_ACTIVE | typeof PRESENCE_UNAVAILABLE |
