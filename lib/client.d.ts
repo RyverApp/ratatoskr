@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { EventEmitter } from 'events';
 import * as WebSocket from 'ws';
-import { Ack, Error, Other, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, VoiceChange } from './interfaces';
+import { Ack, Error, Other, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, VoiceChange, MarkRead } from './interfaces';
 export declare enum ConnectionStatus {
     Disconnected = 0,
     Connecting = 1,
@@ -79,4 +79,5 @@ export declare class Client extends EventEmitter {
     sendUserTyping(message: UserTyping, ack?: boolean): Promise<Ack>;
     sendTeamJoin(message: TeamJoin, ack?: boolean): Promise<Ack>;
     sendTeamLeave(message: TeamLeave, ack?: boolean): Promise<Ack>;
+    sendMarkAsRead(message: MarkRead, ack?: boolean): Promise<Ack>;
 }

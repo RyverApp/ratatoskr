@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import * as url from 'url';
 import * as WebSocket from 'ws';
 import * as shortid from 'shortid';
-import { Ack, Error, Other, Auth, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, Inbound, VoiceChange } from './interfaces';
+import { Ack, Error, Other, Auth, Chat, PresenceChange, UserTyping, Ping, TeamJoin, TeamLeave, Outbound, Inbound, VoiceChange, MarkRead } from './interfaces';
 
 const debug: debug.IDebugger = require('debug')('ratatoskr:client');
 
@@ -355,6 +355,11 @@ export class Client extends EventEmitter {
 
     sendTeamLeave(message: TeamLeave, ack: boolean = false): Promise<Ack> {
         message.type = 'team_leave';
+        return this.send(this._ensureCanAck(ack, message));
+    }
+
+    sendMarkAsRead(message: MarkRead, ack: boolean = false): Promise<Ack> {
+        message.type = 'mark_read';
         return this.send(this._ensureCanAck(ack, message));
     }
 }
