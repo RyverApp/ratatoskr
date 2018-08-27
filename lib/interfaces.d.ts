@@ -86,5 +86,11 @@ export interface TeamLeave {
     id?: string;
     to: string;
 }
-export declare type Outbound = Auth | Chat | PresenceChange | VoiceChange | UserTyping | Ping | TeamJoin | TeamLeave | Other;
+export interface MarkRead {
+    type: 'mark_read';
+    id?: string;
+    to: string;
+    key: string;
+}
+export declare type Outbound = Auth | Chat | PresenceChange | VoiceChange | UserTyping | Ping | TeamJoin | TeamLeave | MarkRead | Other;
 export declare type Inbound = Ack | Error | Other;
